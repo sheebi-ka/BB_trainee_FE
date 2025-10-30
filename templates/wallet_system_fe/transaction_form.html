@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Transfer Funds</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f4f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .transaction-form {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 420px;
+      margin-bottom: 15px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+      margin-top: 12px;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    button {
+      width: 100%;
+      background: #3498db;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #2c80b4;
+    }
+
+    option {
+      color: #333;
+    }
+
+    .transaction-form:hover {
+      transform: translateY(-3px);
+      transition: 0.3s ease;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: 600;
+      font-size: 15px;
+      transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+      color: #2c80b4;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="transaction-form">
+      <h2>Transfer Funds</h2>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <label for="member_one">Sender:</label>
+        <select name="member_one" id="member_one" required>
+          <option value="">Select Sender</option>
+          {% for member in members %}
+            <option value="{{ member.id }}">{{ member.full_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="member_two">Receiver:</label>
+        <select name="member_two" id="member_two" required>
+          <option value="">Select Receiver</option>
+          {% for member in members %}
+            <option value="{{ member.id }}">{{ member.full_name }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" step="0.01" min="0.01" required>
+
+        <label for="description">Description:</label>
+        <textarea name="description" rows="3" placeholder="Enter description (optional)"></textarea>
+
+        <button type="submit">Transfer</button>
+      </form>
+    </div>
+
+    <a href="{% url 'transaction_list' %}" class="back-link">← Back to Transaction List</a>
+  </div>
+
+</body>
+</html>

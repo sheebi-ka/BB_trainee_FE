@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% block title %}Wallets{% endblock %}
+{% block content %}
+
+<h2 style="text-align:center; margin: 30px 0;">Wallets List</h2>
+
+
+<div style="text-align:center; margin-bottom:20px;">
+  <form method="get" style="display:inline-block;">
+    <input type="text" name="search" placeholder="Search by Member Name or ID"
+           value="{{ search_query }}" 
+           style="padding:8px; width:250px; border-radius:5px; border:1px solid #ccc;">
+    <button type="submit" class="btn-blue">Search</button>
+    <a href="{% url 'wallet_list' %}" class="btn-blue">Clear</a>
+  </form>
+</div>
+
+
+<div class="button-group">
+  <a href="{% url 'wallet_create' %}" class="btn-blue">Add Wallet</a>
+  <a href="{% url 'home' %}" class="btn-blue">Back to Home</a>
+</div>
+
+
+<div class="table-container">
+  <table class="styled-table">
+    <thead>
+      <tr>
+        <th>Member ID</th>
+        <th>Member Name</th>
+        <th>Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for wallet in records %}
+      <tr>
+        <td class="member-cell">
+          <a href="javascript:void(0);" class="member-link" onclick="toggleDropdown('{{ wallet.member_id }}')">
+            {{ wallet.member_id }}
+          </a>
+
+          <!-- Dropdown for Deposit & Withdraw -->
+          <div id="dropdown-{{ wallet.member_id }}" class="dropdown-menu-custom">
+            <a href="{% url 'wallet_deposit' wallet.member_id %}" class="dropdown-item text-violet">Deposit</a>
+            <a href="{% url 'wallet_withdraw' wallet.member_id %}" class="dropdown-item text-warning">Withdraw</a>
+          </div>
+        </td>
+        <td>{{ wallet.member_name }}</td>
+        <td>{{ wallet.balance }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3">No wallets found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+<div style="text-align:center; margin:25px 0;">
+  {% if records.has_previous %}
+    <a href="?page={{ records.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn-blue">Previous</a>
+  {% endif %}
+
+  <span style="margin:0 10px; font-weight:500;">
+    Page {{ records.number }} of {{ records.paginator.num_pages }}
+  </span>
+
+  {% if records.has_next %}
+    <a href="?page={{ records.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn-blue">Next</a>
+  {% endif %}
+</div>
+
+
+<style>
+  h2 {
+    color: #333;
+    text-align: center;
+  }
+
+  .button-group {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .btn-blue {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    margin: 3px;
+    display: inline-block;
+  }
+
+  .btn-blue:hover {
+    background-color: #0056b3;
+  }
+
+  .table-container {
+    width: 80%;
+    margin: 0 auto;
+    overflow-x: auto;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 10px;
+  }
+
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+  }
+
+  .styled-table thead tr {
+    background-color: #007bff;
+    color: white;
+    text-transform: uppercase;
+  }
+
+  .styled-table th, .styled-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .styled-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  .styled-table tbody tr:hover {
+    background-color: #eef3ff;
+  }
+
+  .member-link {
+    color: #007bff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .member-link:hover {
+    text-decoration: underline;
+  }
+
+  .dropdown-menu-custom {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    padding: 5px 0;
+    margin-top: 5px;
+    z-index: 100;
+    min-width: 130px;
+    text-align: left;
+  }
+
+  .dropdown-item {
+    display: block;
+    padding: 8px 15px;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .text-violet {
+    color: #8a2be2;
+  }
+
+  .text-warning {
+    color: #f0ad4e;
+  }
+
+  .dropdown-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  @media (max-width: 768px) {
+    .table-container { width: 95%; }
+  }
+</style>
+
+<!-- ====== JS ====== -->
+<script>
+  function toggleDropdown(memberId) {
+    document.querySelectorAll('.dropdown-menu-custom').forEach(menu => menu.style.display = 'none');
+    const dropdown = document.getElementById('dropdown-' + memberId);
+    if (dropdown) dropdown.style.display = 'block';
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.member-cell')) {
+      document.querySelectorAll('.dropdown-menu-custom').forEach(menu => menu.style.display = 'none');
+    }
+  });
+</script>
+
+{% endblock %}

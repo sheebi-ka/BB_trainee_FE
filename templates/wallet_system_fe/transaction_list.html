@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}Transactions{% endblock %}
+{% block content %}
+
+<h2 style="text-align:center; margin: 30px 0;">Transaction List</h2>
+
+<!-- 🔍 Search -->
+<div style="text-align:center; margin-bottom:20px;">
+  <form method="get" style="display:inline-block;">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by sender, receiver, type, or amount"
+           style="padding:8px; width:300px; border-radius:5px; border:1px solid #ccc;">
+    <button type="submit" class="btn-blue">Search</button>
+    <a href="{% url 'transaction_list' %}" class="btn-blue">Clear</a>
+  </form>
+</div>
+
+<!-- ➕ Add / Back Buttons -->
+<div class="button-group">
+  <a href="{% url 'transaction_create' %}" class="btn-blue">Add Transaction</a>
+  <a href="{% url 'home' %}" class="btn-blue">Back to Home</a>
+</div>
+
+<!-- 📋 Transaction Table -->
+<div class="table-container">
+  <table class="styled-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Sender</th>
+        <th>Receiver</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Timestamp</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in records %}
+      <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.sender|default:"-" }}</td>
+        <td>{{ t.receiver|default:"-" }}</td>
+        <td>{{ t.transaction_type }}</td>
+        <td>{{ t.amount }}</td>
+        <td>{{ t.timestamp }}</td>
+        <td>{{ t.description|default:"-" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">No transactions found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- 🔢 Pagination -->
+<div style="text-align:center; margin:25px 0;">
+  {% if records.has_previous %}
+    <a href="?page={{ records.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" class="btn-blue">Previous</a>
+  {% endif %}
+
+  <span style="margin:0 10px; font-weight:500;">
+    Page {{ records.number }} of {{ records.paginator.num_pages }}
+  </span>
+
+  {% if records.has_next %}
+    <a href="?page={{ records.next_page_number }}{% if query %}&q={{ query }}{% endif %}" class="btn-blue">Next</a>
+  {% endif %}
+</div>
+
+<!-- 🎨 Styling -->
+<style>
+  h2 {
+    color: #333;
+    text-align: center;
+  }
+
+  .button-group {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .btn-blue {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    margin: 3px;
+    display: inline-block;
+  }
+
+  .btn-blue:hover {
+    background-color: #0056b3;
+  }
+
+  .table-container {
+    width: 90%;
+    margin: 0 auto;
+    overflow-x: auto;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 10px;
+  }
+
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+  }
+
+  .styled-table thead tr {
+    background-color: #007bff;
+    color: white;
+    text-transform: uppercase;
+  }
+
+  .styled-table th, .styled-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .styled-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  .styled-table tbody tr:hover {
+    background-color: #eef3ff;
+  }
+
+  @media (max-width: 768px) {
+    .table-container { width: 95%; }
+  }
+</style>
+
+{% endblock %}
